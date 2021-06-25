@@ -17,8 +17,11 @@
                     </button>
                     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                         <div class="navbar-nav">
-                            <button class="btn btn-sm btn-outline-secondary" id='home' type="button"><a class="nav-item nav-link" href="{{ path('index') }}">New Article</a></button>  
-                            <button class="btn btn-sm btn-outline-secondary" id='new' type="button"><a class="nav-item nav-link" href="{{ path('app_lucky_number') }}">My Profile</a></button>  
+                            {% if app.user %}<button class="btn btn-sm btn-outline-secondary" id='home' type="button"><a class="nav-item nav-link" href="{{ path('index') }}">New Article</a></button>{% endif %}
+                            {% if app.user is null %}<button class="btn btn-sm btn-outline-secondary" id='sign_in' type="button"><a class="nav-item nav-link" href="{{ path('app_login') }}">Sign In</a></button>{% endif %} 
+                            {% if app.user is null %}<button class="btn btn-sm btn-outline-secondary" id='sign_up' type="button"><a class="nav-item nav-link" href="{{ path('registration_user') }}">Sign Up</a></button>{% endif %}   
+                            {% if app.user %}<button class="btn btn-sm btn-outline-secondary" id='new' type="button"><a class="nav-item nav-link" href="{{ path('profile_user') }}">My Profile</a></button>{% endif %}
+                            {% if app.user %}<button class="btn btn-sm btn-outline-secondary" id='logout' type="button"><a class="nav-item nav-link" href="{{ path('app_logout') }}">Logout</a></button>{% endif %}   
                         </div>
                     </div>
                 </nav>
