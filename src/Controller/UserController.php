@@ -7,11 +7,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Form\UserForm;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use App\Form\ProfileForm;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class UserController extends AbstractController
 {
@@ -39,10 +39,8 @@ class UserController extends AbstractController
             $em->persist($user);
             $em->flush();
 
-            // ... сделайте любую другую работу - вроде отправки письма и др
-            // может, установите "флеш" сообщение об успешном выполнении для пользователя
-
-            return $this->redirectToRoute('index');
+            $this->addFlash('success', 'Registration complete! Please sign in.');
+            return $this->redirectToRoute('app_login');
         }
 
         return $this->render(
@@ -71,5 +69,28 @@ class UserController extends AbstractController
         // or render a template
         // in the template, print things with {{ product.name }}
         // return $this->render('product/show.html.twig', ['product' => $product]);
+    }
+
+    /**
+    * @Route("/profile", name="profile_user")
+    */
+    public function profile(Request $request, UserRepository $userRepository)
+    {
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        $form = $this->createForm(ProfileForm::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $users = $userRepository
+            ->upgradePassword($user,$this->passwordHasher->hashPassword($user,$user->getPassword()));
+
+            $this->addFlash('success', 'Password is changed!');
+            return $this->redirectToRoute('profile_user');
+        }
+
+        return $this->render(
+            'user/profile.html.twig',
+            array('form' => $form->createView())
+        );
     }
 }

@@ -28,7 +28,15 @@
         {% endblock %}
         <div class="row">
             <div class="col">
-                <div class="container" id="response">{% block response %}{% endblock %}</div>
+                <div class="container" id="response">
+                    {% block response %}
+                        {% for message in app.flashes('success') %}
+                            <div class="alert alert-success">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endblock %}
+                </div>
                 <div class="container" id="content">{% block content %}{% endblock %}</div>
             </div>
         </div>

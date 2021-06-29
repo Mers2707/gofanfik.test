@@ -8,13 +8,10 @@
             You are not logged in , <a href="{{ path('app_login') }}">Sign in</a>
         </div>
     {% else %}
-        <form method="post">
-            <h1 class="h3 mb-3 font-weight-normal">Settings</h1>
-            <label for="inputPassword">Change password</label>
-            <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
-            <button class="btn btn-lg btn-primary" type="submit">
-                Save
-            </button>
-        </form>
+        {{ form_start(form) }}
+            {{ form_row(form.password.first) }}
+            {{ form_row(form.password.second) }}
+            <button class="btn btn-lg btn-primary" type="submit">Save</button>
+        {{ form_end(form) }}
     {% endif %}
 {% endblock %}
