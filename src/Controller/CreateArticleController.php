@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Articles;
+use App\Form\ArticleForm;
 use App\Repository\ArticlesRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,6 +26,8 @@ class CreateArticleController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $article->setName($article->getName());
+            $nowUser = $this->container->get('security.token_storage')->getToken()->getUser();
+            $article->setUserId($nowUser->getId());
             $article->setDescription($article->getDescription());
             $em = $this->getDoctrine()->getManager();
             $em->persist($article);
@@ -37,7 +40,7 @@ class CreateArticleController extends AbstractController
         }
 
         return $this->render(
-            'article/create.html.twig',
+            'articles/create.html.twig',
             array('form' => $form->createView())
         );
         //return new Response('Saved new product with id '.$article->getId());

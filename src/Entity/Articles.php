@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Articles
 {
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -72,4 +73,5 @@ class Articles
 
         return $this;
     }
+
 }

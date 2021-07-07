@@ -1,0 +1,9 @@
+{
+    "dir": "e:\\OpenServer\\modules\\Symfony",
+    "watch": null,
+    "pid": 1504,
+    "port": 8000,
+    "scheme": "https",
+    "args": null,
+    "name": "Web Server"
+}
