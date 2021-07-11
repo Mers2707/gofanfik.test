@@ -21,3 +21,6 @@
 /.env
 /.htaccess
 /.Procfile
+/symfony.exe
+/symfony.lock
+/.symfony
