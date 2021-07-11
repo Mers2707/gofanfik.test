@@ -5,8 +5,39 @@
 {% block content %}
 {{ form_start(form) }}
     {{ form_row(form.name) }}
+    {{ form_row(form.fanfik) }}
     {{ form_row(form.description) }}
-
+    {{ form_row(form.new_section) }}
+    {{ form_row(form.section_id) }}
     <button class="btn btn-lg btn-primary" type="submit">Save</button>
 {{ form_end(form) }}
+    
+<script>
+    var $collectionHolder;
+    var $addTagLink = $('.newsection');
+
+    $('.deletesection').on('click', function(){
+        $(this).closest('fieldset').remove();
+    })
+
+    jQuery(document).ready(function() {
+        $('legend.col-form-label.required')[0].innerHTML = 'Sections';
+        $collectionHolder = $('#article_form_section_id');
+        $collectionHolder.data('index', $collectionHolder.find('fieldset').length);
+        $addTagLink.on('click', function(e) {
+            e.preventDefault();
+            addTagForm($collectionHolder);
+        });
+    });
+
+    function addTagForm($collectionHolder) {
+        var prototype = $collectionHolder.data('prototype');
+        var index = $collectionHolder.data('index');
+        var newForm = prototype;
+        newForm = newForm.replace(/__name__/g, index);
+        $collectionHolder.data('index', index + 1);
+        var $newFormLi = $collectionHolder.append(newForm);
+    }
+</script>
 {% endblock %}
+

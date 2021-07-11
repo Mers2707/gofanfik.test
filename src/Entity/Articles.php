@@ -2,7 +2,10 @@
 
 namespace App\Entity;
 
+use App\Entity\Fanfik;
 use App\Repository\ArticlesRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -32,6 +35,22 @@ class Articles
      * @ORM\Column(type="integer")
      */
     private $user_id;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Fanfik::class, cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $fanfik;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ArticleSection::class, mappedBy="article", cascade={"persist"})
+     */
+    private $section_id;
+
+    public function __construct()
+    {
+        $this->section_id = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -70,6 +89,48 @@ class Articles
     public function setUserId(int $user_id): self
     {
         $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function getFanfik(): ?Fanfik
+    {
+        return $this->fanfik;
+    }
+
+    public function setFanfik(Fanfik $fanfik): self
+    {
+        $this->fanfik = $fanfik;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ArticleSection[]
+     */
+    public function getSectionId(): Collection
+    {
+        return $this->section_id;
+    }
+
+    public function addSectionId(ArticleSection $sectionId): self
+    {
+        if (!$this->section_id->contains($sectionId)) {
+            $this->section_id[] = $sectionId;
+            $sectionId->setArticle($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSectionId(ArticleSection $sectionId): self
+    {
+        if ($this->section_id->removeElement($sectionId)) {
+            // set the owning side to null (unless already changed)
+            if ($sectionId->getArticle() === $this) {
+                $sectionId->setArticle(null);
+            }
+        }
 
         return $this;
     }

@@ -138,6 +138,9 @@
     "nikic/php-parser": {
         "version": "v4.10.5"
     },
+    "ninsuo/symfony-collection": {
+        "version": "2.1.33"
+    },
     "phar-io/manifest": {
         "version": "2.0.1"
     },

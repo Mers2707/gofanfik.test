@@ -4,11 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Articles;
 use App\Form\ArticleForm;
-use App\Repository\ArticlesRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class CreateArticleController extends AbstractController
 {
@@ -18,8 +18,6 @@ class CreateArticleController extends AbstractController
 
     public function createArticles(Request $request): Response
     {
-        // you can fetch the EntityManager via $this->getDoctrine()
-        // or you can add an argument to the action: createProduct(EntityManagerInterface $entityManager)
         $article = new Articles();
         $form = $this->createForm(ArticleForm::class, $article);
 
@@ -29,12 +27,19 @@ class CreateArticleController extends AbstractController
             $nowUser = $this->container->get('security.token_storage')->getToken()->getUser();
             $article->setUserId($nowUser->getId());
             $article->setDescription($article->getDescription());
+
+            $newSection = new ArrayCollection();
+
+            foreach ($article->getSectionId() as $section) {
+                $newSection->add($section);
+            }
+
+            foreach ($newSection as $section) {
+                $section->setArticle($article);
+            }
             $em = $this->getDoctrine()->getManager();
             $em->persist($article);
             $em->flush();
-
-            // ... сделайте любую другую работу - вроде отправки письма и др
-            // может, установите "флеш" сообщение об успешном выполнении для пользователя
 
             return $this->redirectToRoute('articles_show');
         }
@@ -43,6 +48,6 @@ class CreateArticleController extends AbstractController
             'articles/create.html.twig',
             array('form' => $form->createView())
         );
-        //return new Response('Saved new product with id '.$article->getId());
     }
+    
 }

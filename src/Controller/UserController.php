@@ -26,11 +26,8 @@ class UserController extends AbstractController
      */
     public function registerAction(Request $request)
     {
-        // 1) постройте форму
         $user = new User();
         $form = $this->createForm(UserForm::class, $user);
-
-        // 2) обработайте отправку (произойдёт только в POST)
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setPassword($this->passwordHasher->hashPassword($user,$user->getPassword()));
@@ -65,10 +62,6 @@ class UserController extends AbstractController
         return $this->render('user/showUsers.html.twig',[
             'users' => $users
         ]);
-
-        // or render a template
-        // in the template, print things with {{ product.name }}
-        // return $this->render('product/show.html.twig', ['product' => $product]);
     }
 
     /**

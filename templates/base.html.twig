@@ -7,6 +7,9 @@
             <link rel="stylesheet" type="text/css" href="{{ asset('css/base.css') }}"/>
             <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous" />
         {% endblock %}
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     </head>
     <body style="padding-top:80px;">
         {% block navbar %}
@@ -31,6 +34,9 @@
                                 </button>
                                 <button class="btn btn-sm btn-outline-secondary" id='new' type="button">
                                     <a class="nav-item nav-link" href="{{ path('profile_user') }}">My Profile</a>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" id='my_articles' type="button">
+                                    <a class="nav-item nav-link" href="{{ path('articles_show') }}">My articles</a>
                                 </button>
                                 <button class="btn btn-sm btn-outline-secondary" id='logout' type="button">
                                     <a class="nav-item nav-link" href="{{ path('app_logout') }}">Logout</a>
@@ -58,12 +64,12 @@
                                     {% for article in articles %}
                                         <div class="col-md-4 p-3 border bg-light">
                                             <div class="h-100 card">
-                                            <img src="{{ asset('img/fandom/lord.jpg')}}" class="card-img-top img-fluid" alt="...">
+                                            <img src="{{ asset(article.fanfik.mainimg)}}" class="card-img-top img-fluid" alt="...">
                                                 <div class="card-body">
                                                     <h5 class="card-title">{{ article.name }}</h5>
                                                     <p class="card-text">{{ article.description }}</p>
                                                 </div>
-                                                <a href="#" class="btn btn-primary">Read more...</a>
+                                                <a href="articles{{ asset(article.id)}}" class="btn btn-primary">Read more...</a>
                                             </div>
                                         </div>
                                     {% endfor %}
@@ -73,8 +79,5 @@
                 </div>
             </div>
         </div>
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     </body>
 </html>

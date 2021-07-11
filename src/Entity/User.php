@@ -55,6 +55,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $last_login;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $confirm;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $blocked;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -168,6 +178,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastLogin(): self
     {
         $this->last_login = new \DateTime();
+
+        return $this;
+    }
+
+    public function getConfirm(): ?bool
+    {
+        return $this->confirm;
+    }
+
+    public function setConfirm(?bool $confirm): self
+    {
+        $this->confirm = $confirm;
+
+        return $this;
+    }
+
+    public function getBlocked(): ?bool
+    {
+        return $this->blocked;
+    }
+
+    public function setBlocked(?bool $blocked): self
+    {
+        $this->blocked = $blocked;
 
         return $this;
     }

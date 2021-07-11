@@ -23,6 +23,7 @@ class MainController extends AbstractController
                 'No article found'
             );
         }
+        
         return $this->render('/base.html.twig', [
             'controller_name' => 'MainController',
             'articles' => $articles,
