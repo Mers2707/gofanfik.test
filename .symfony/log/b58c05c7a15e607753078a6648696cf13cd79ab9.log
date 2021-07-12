@@ -1,1 +1,0 @@
-{"level":"warn","source":"server","source":"HTTP","error":"Passthru script \"/index.php\" does not exist under e:\\OpenServer\\modules\\Symfony\\: CreateFile e:\\OpenServer\\modules\\Symfony\\index.php: The system cannot find the file specified.","time":"2021-07-01T10:46:29+03:00","message":"unable to detect the front controller, disabling the PHP server"}
