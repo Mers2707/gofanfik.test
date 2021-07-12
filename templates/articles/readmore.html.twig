@@ -3,12 +3,48 @@
 {% block title %}Articles{% endblock %}
 
 {% block content %}
-        <h2 class="display-3 text-center">{{ article.name }}</h2>
-        <p class="lead"><b>{{ article.description }}</b></h4>
     {% if article %}
+        <div class="rating-area">
+            <input type="radio" id="star-5" name="rating" value="5">
+            <label for="star-5" title="5"></label>	
+            <input type="radio" id="star-4" name="rating" value="4">
+            <label for="star-4" title="4"></label>    
+            <input type="radio" id="star-3" name="rating" value="3">
+            <label for="star-3" title="3"></label>  
+            <input type="radio" id="star-2" name="rating" value="2">
+            <label for="star-2" title="2"></label>    
+            <input type="radio" id="star-1" name="rating" value="1">
+            <label for="star-1" title="1"></label>
+        </div>
+        <div>
+            <h2 class="display-3 text-center">{{ article.name }}</h2>
+            <p class="lead"><b>{{ article.description }}</b></h4>
+        </div>
+    
         {% for section in sections %}
                 <h4 class="display-4">{{ section.name }}</h4>
                 <p class="lead">{{ section.text }}</p>
         {% endfor %}
+        {% if comments %}
+            <h4><p class="lead">Comments</p></h4>
+            {% for comment in comments %}
+                <div class="media-body border border-primary rounded">
+                    <div class="author">{{ comment.username }}</div>
+                    <div class="metadata">
+                        <span class="date">{{ comment.datetime|date('l jS \of F Y h:i:s A') }}</span>
+                    </div>
+                    <div class="media-text text-justify">{{ comment.text }}</div>
+                </div>
+            {% endfor %}
+                {% if app.user %}
+                    <div>
+                    <p class="lead"><b>New Comment</b></p>
+                        {{ form_start(form) }}
+                            {{ form_row(form.text) }}
+                            <button class="btn btn-lg btn-primary" type="submit">Sumbit</button>
+                        {{ form_end(form) }}
+                    </div>
+                {% endif %}
+        {% endif %}
     {% endif %}
 {% endblock %}

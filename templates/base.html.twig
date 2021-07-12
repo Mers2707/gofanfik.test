@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <title>{% block title %}My Application{% endblock %}</title>
         {% block stylesheets %}
-            <link rel="stylesheet" type="text/css" href="{{ asset('css/base.css') }}"/>
+            <link rel="stylesheet" type="text/css" href="{{ asset('/base.css') }}"/>
             <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous" />
         {% endblock %}
         <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -38,6 +38,11 @@
                                 <button class="btn btn-sm btn-outline-secondary" id='my_articles' type="button">
                                     <a class="nav-item nav-link" href="{{ path('articles_show') }}">My articles</a>
                                 </button>
+                                {% if app.user.getRoles() == ['ROLE_ADMIN'] %}
+                                    <button class="btn btn-sm btn-outline-secondary" id='admin_panel' type="button">
+                                        <a class="nav-item nav-link" href="{{ path('admin_panel') }}">CPanel</a>
+                                    </button>
+                                {% endif %}
                                 <button class="btn btn-sm btn-outline-secondary" id='logout' type="button">
                                     <a class="nav-item nav-link" href="{{ path('app_logout') }}">Logout</a>
                                 </button>
@@ -46,8 +51,8 @@
                     </div>
                 </nav>
         {% endblock %}
-        <div class="row">
-            <div class="col">
+        <div class="row-12">
+            <div class="col-12">
                 <div class="container" id="response">
                     {% block response %}
                         {% for message in app.flashes('success') %}

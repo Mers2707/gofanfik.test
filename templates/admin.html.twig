@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin panel{% endblock %}
+
+{% block content %}
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Username</th>
+                <th scope="col">Email</th>
+                <th scope="col">Admin</th>
+                <th scope="col">Created</th>
+                <th scope="col">Blocked</th>
+                <th scope="col"> </th>
+                <th scope="col"> </th>
+                <th scope="col"> </th>
+            </tr>
+        </thead>
+        <tbody>
+        {% if users %}
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{% if user.roles == ['ROLE_ADMIN'] %} Yes {% else %} No {% endif %}</td>
+                    <td>{{ user.created|date() }}</td>
+                    <td>{% if user.blocked %} Yes {% else %} No {% endif %}</td>
+                    <td><a href="admin{{ asset(user.id)}}/setadmin" class="btn btn-info">{% if user.roles == ['ROLE_ADMIN'] %} Role User {% else %} Role admin {% endif %}</a></td>
+                    <td><a href="admin{{ asset(user.id)}}/blocked" class="btn btn-primary">{% if user.blocked %} Unblocked {% else %} Blocked {% endif %}</a></td>
+                    <td><a href="admin{{ asset(user.id)}}/delete" class="btn btn-warning">Delete</a></td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+{% endblock %}

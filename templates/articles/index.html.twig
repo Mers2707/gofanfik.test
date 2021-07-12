@@ -9,6 +9,8 @@
                 <th scope="col">Name</th>
                 <th scope="col">Description</th>
                 <th scope="col"> </th>
+                <th scope="col"> </th>
+                <th scope="col"> </th>
             </tr>
         </thead>
         <tbody>
@@ -18,7 +20,9 @@
                 <tr>
                     <td>{{ article.name }}</td>
                     <td>{{ article.description }}</td>
+                    <td><a href="articles{{ asset(article.id)}}" class="btn btn-info">View</a></td>
                     <td><a href="articles{{ asset(article.id)}}/edit" class="btn btn-primary">Edit</a></td>
+                    <td><a href="articles{{ asset(article.id)}}/delete" class="btn btn-warning">Delete</a></td>
                 </tr>
             {% endfor %}
         {% endif %}

@@ -49,5 +49,4 @@ class CreateArticleController extends AbstractController
             array('form' => $form->createView())
         );
     }
-    
 }

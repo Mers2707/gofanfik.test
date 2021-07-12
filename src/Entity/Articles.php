@@ -37,7 +37,7 @@ class Articles
     private $user_id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Fanfik::class, cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity=Fanfik::class, cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $fanfik;
@@ -48,9 +48,15 @@ class Articles
      */
     private $section_id;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Comments::class, mappedBy="article", orphanRemoval=true)
+     */
+    private $comments;
+
     public function __construct()
     {
         $this->section_id = new ArrayCollection();
+        $this->comments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -130,6 +136,36 @@ class Articles
             // set the owning side to null (unless already changed)
             if ($sectionId->getArticle() === $this) {
                 $sectionId->setArticle(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Comments[]
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comments $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments[] = $comment;
+            $comment->setArticle($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comments $comment): self
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getArticle() === $this) {
+                $comment->setArticle(null);
             }
         }
 

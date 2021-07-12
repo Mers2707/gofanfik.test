@@ -32,6 +32,8 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setPassword($this->passwordHasher->hashPassword($user,$user->getPassword()));
             $user->setCreated();
+            $user->setBlocked(false);
+            $user->setRoles(array('ROLE_USER'));
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
@@ -44,24 +46,6 @@ class UserController extends AbstractController
             'user/signup.html.twig',
             array('form' => $form->createView())
         );
-    }
-
-    /**
-    * @Route("/users", name="users_show")
-    */
-    public function show(UserRepository $userRepository): Response
-    {
-        $users = $userRepository
-            ->findAll();
-
-        if (!$users) {
-            throw $this->createNotFoundException(
-                'No article found'
-            );
-        }
-        return $this->render('user/showUsers.html.twig',[
-            'users' => $users
-        ]);
     }
 
     /**

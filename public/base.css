@@ -1,0 +1,63 @@
+body{
+    padding-top:45px;
+}
+
+.rating-area {
+	overflow: hidden;
+	width: 265px;
+	margin: 0;
+}
+.rating-area:not(:checked) > input {
+	display: none;
+}
+.rating-area:not(:checked) > label {
+	float: right;
+	width: 42px;
+	padding: 0;
+	cursor: pointer;
+	font-size: 32px;
+	line-height: 32px;
+	color: lightgrey;
+	text-shadow: 1px 1px #bbb;
+}
+.rating-area:not(:checked) > label:before {
+	content: '★';
+}
+.rating-area > input:checked ~ label {
+	color: gold;
+	text-shadow: 1px 1px #c60;
+}
+.rating-area:not(:checked) > label:hover,
+.rating-area:not(:checked) > label:hover ~ label {
+	color: gold;
+}
+.rating-area > input:checked + label:hover,
+.rating-area > input:checked + label:hover ~ label,
+.rating-area > input:checked ~ label:hover,
+.rating-area > input:checked ~ label:hover ~ label,
+.rating-area > label:hover ~ input:checked ~ label {
+	color: gold;
+	text-shadow: 1px 1px goldenrod;
+}
+.rate-area > label:active {
+	position: relative;
+}
+
+.media-body {
+	padding: 20px;
+	margin-bottom: 10px;
+}
+
+.media-body .author {
+	display: inline-block;
+	font-size: 1rem;
+	color: #000;
+	font-weight: 700;
+}
+
+.media-body .metadata {
+	display: inline-block;
+	margin-left: .5rem;
+	color: #777;
+	font-size: .8125rem;
+}

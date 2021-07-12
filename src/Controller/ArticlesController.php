@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Articles;
+use App\Entity\Comments;
 use App\Entity\ArticleSection;
 use App\Repository\ArticlesRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -10,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Form\ArticleForm;
-use App\Form\ArticleEditForm;
+use App\Form\CommentForm;
 use Doctrine\Common\Collections\ArrayCollection;
 
 
@@ -22,14 +23,15 @@ class ArticlesController extends AbstractController
 
     public function show(ArticlesRepository $articleRepository): Response
     {
-        $nowUser = $this->container->get('security.token_storage')->getToken();
-        if(!is_null($nowUser)){
-            $authUser = $nowUser->getUser();
+        $nowUser = $this->container->get('security.token_storage')->getToken()->getUser();
+
+        if(in_array('ROLE_ADMIN',$nowUser->getRoles())){
+            $articles = $articleRepository
+            ->findAll();
         } else {
-            $authUser = 0;
+            $articles = $articleRepository
+            ->findBy(array("user_id" => $nowUser->getId()));
         }
-        $articles = $articleRepository
-            ->findBy(array("user_id" => $authUser));
 
         if (!$articles) {
             return $this->redirectToRoute('index');
@@ -42,27 +44,52 @@ class ArticlesController extends AbstractController
     /**
      * @Route("/articles/{page}", name="articles_readmore", requirements={"page"="\d+"})
      */
-    public function readmore(int $page, ArticlesRepository $articleRepository): Response
+    public function readmore(int $page, Request $request, ArticlesRepository $articleRepository): Response
     {
         $em = $this->getDoctrine()->getManager();
         $article = $em->getRepository(Articles::class)->find($page);
 
-        if (!$article) {
-            throw $this->createNotFoundException(
-                'No article found'
-            );
-        }
-
+        $comments = $article->getComments();
         $originalSection = new ArrayCollection();
 
         foreach ($article->getSectionId() as $section) {
             $originalSection->add($section);
         }
 
-        return $this->render('articles/readmore.html.twig', [
-            'article' => $article,
-            'sections' => $originalSection,
-        ]);
+        $nowUser = $this->container->get('security.token_storage')->getToken();
+        if(!is_null($nowUser)){
+            $authUser = $nowUser->getUser()->getId();
+        }
+
+        if(isset($authUser)){
+            $comment = new Comments;
+            $form = $this->createForm(CommentForm::class, $comment);
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $comment->setArticle($article);
+                $nowUser = $this->container->get('security.token_storage')->getToken()->getUser();
+                $comment->setUser($nowUser);
+                $comment->setUsername($nowUser->getUsername());
+                $comment->setDatetime();
+
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($comment);
+                $em->flush();
+                $this->addFlash('success', 'Comment is add!');
+            }
+            return $this->render('articles/readmore.html.twig', [
+                'article' => $article,
+                'form' => $form->createView(),
+                'sections' => $originalSection,
+                'comments' => $comments,
+            ]);
+        } else {
+            return $this->render('articles/readmore.html.twig', [
+                'article' => $article,
+                'sections' => $originalSection,
+                'comments' => $comments,
+            ]);
+        }
     }
 
     /**
@@ -73,19 +100,10 @@ class ArticlesController extends AbstractController
         $em = $this->getDoctrine()->getManager();
         $article = $em->getRepository(Articles::class)->find($page);
 
-        if (!$article) {
-            throw $this->createNotFoundException(
-                'No article found'
-            );
-        }
-
         $validUser = $article->getUserId();
-        $nowUser = $this->container->get('security.token_storage')->getToken();
-        if(!is_null($nowUser)){
-            $authUser = $nowUser->getUser();
-        }
+        $nowUser = $this->container->get('security.token_storage')->getToken()->getUser();
 
-        if(isset($authUser) && ($authUser==$validUser)){
+        if(in_array('ROLE_ADMIN',$nowUser->getRoles()) || $nowUser->getId()===$validUser){
 
             $originalSection = new ArrayCollection();
 
@@ -136,5 +154,23 @@ class ArticlesController extends AbstractController
             $strPage = (string) $page;
             return $this->redirectToRoute('index');
         }
+    }
+
+    /**
+    * @Route("/articles/{page}/delete", name="article_delete", requirements={"page"="\d+"})
+    */
+    public function deleteAction(int $page, Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $article = $em->getRepository(Articles::class)->find($page);
+        $validUser = $article->getUserId();
+
+        $nowUser = $this->container->get('security.token_storage')->getToken()->getUser();
+
+        if(in_array('ROLE_ADMIN',$nowUser->getRoles()) || $nowUser->getId()===$validUser){
+            $em->remove($article);
+            $em->flush();
+            $this->addFlash('success', 'Article is delete!');
+        }
+        return $this->redirectToRoute('articles_show');
     }
 }
