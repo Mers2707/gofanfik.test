@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Articles{% endblock %}
+
+{% block content %}
+        <h2 class="display-3 text-center">{{ article.name }}</h2>
+        <p class="lead"><b>{{ article.description }}</b></h4>
+    {% if article %}
+        {% for section in sections %}
+                <h4 class="display-4">{{ section.name }}</h4>
+                <p class="lead">{{ section.text }}</p>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

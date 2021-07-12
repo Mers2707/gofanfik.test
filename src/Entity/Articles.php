@@ -44,6 +44,7 @@ class Articles
 
     /**
      * @ORM\OneToMany(targetEntity=ArticleSection::class, mappedBy="article", cascade={"persist"})
+     * @ORM\OrderBy({"number" = "ASC"})
      */
     private $section_id;
 

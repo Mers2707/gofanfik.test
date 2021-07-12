@@ -17,12 +17,6 @@ class MainController extends AbstractController
     {
         $articles = $articleRepository
         ->findAll();
-
-        if (!$articles) {
-            throw $this->createNotFoundException(
-                'No article found'
-            );
-        }
         
         return $this->render('/base.html.twig', [
             'controller_name' => 'MainController',

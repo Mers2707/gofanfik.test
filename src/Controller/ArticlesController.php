@@ -22,13 +22,17 @@ class ArticlesController extends AbstractController
 
     public function show(ArticlesRepository $articleRepository): Response
     {
+        $nowUser = $this->container->get('security.token_storage')->getToken();
+        if(!is_null($nowUser)){
+            $authUser = $nowUser->getUser();
+        } else {
+            $authUser = 0;
+        }
         $articles = $articleRepository
-            ->findAll();
+            ->findBy(array("user_id" => $authUser));
 
         if (!$articles) {
-            throw $this->createNotFoundException(
-                'No article found'
-            );
+            return $this->redirectToRoute('index');
         }
         return $this->render('articles/index.html.twig',[
             'articles' => $articles
@@ -40,17 +44,24 @@ class ArticlesController extends AbstractController
      */
     public function readmore(int $page, ArticlesRepository $articleRepository): Response
     {
-        $articles = $articleRepository
-            ->findBy(array("id" => $page));
+        $em = $this->getDoctrine()->getManager();
+        $article = $em->getRepository(Articles::class)->find($page);
 
-        if (!$articles) {
+        if (!$article) {
             throw $this->createNotFoundException(
                 'No article found'
             );
         }
-        return $this->render('/base.html.twig', [
-            'controller_name' => 'MainController',
-            'articles' => $articles,
+
+        $originalSection = new ArrayCollection();
+
+        foreach ($article->getSectionId() as $section) {
+            $originalSection->add($section);
+        }
+
+        return $this->render('articles/readmore.html.twig', [
+            'article' => $article,
+            'sections' => $originalSection,
         ]);
     }
 
@@ -68,48 +79,62 @@ class ArticlesController extends AbstractController
             );
         }
 
-        $originalSection = new ArrayCollection();
-
-        foreach ($article->getSectionId() as $section) {
-            $originalSection->add($section);
+        $validUser = $article->getUserId();
+        $nowUser = $this->container->get('security.token_storage')->getToken();
+        if(!is_null($nowUser)){
+            $authUser = $nowUser->getUser();
         }
-        
-        $form = $this->createForm(ArticleForm::class, $article);
 
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $article->setName($article->getName());
-            $nowUser = $this->container->get('security.token_storage')->getToken()->getUser();
-            $article->setUserId($nowUser->getId());
-            $article->setDescription($article->getDescription());
-            $article->setFanfik($article->getFanfik());
+        if(isset($authUser) && ($authUser==$validUser)){
 
-            foreach ($originalSection as $section) {
-                if (false === $article->getSectionId()->contains($section)) {
-                    $section->getArticle()->removeSectionId($section);
-                    $section->setArticle(null);
-                    $em->persist($section);
-                    $em->remove($section);
-                }
-            }
-
-            $newSection = new ArrayCollection();
+            $originalSection = new ArrayCollection();
 
             foreach ($article->getSectionId() as $section) {
-                $newSection->add($section);
+                $originalSection->add($section);
+            }
+            
+            $form = $this->createForm(ArticleForm::class, $article);
+
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $article->setName($article->getName());
+                $nowUser = $this->container->get('security.token_storage')->getToken()->getUser();
+                $article->setUserId($nowUser->getId());
+                $article->setDescription($article->getDescription());
+                $article->setFanfik($article->getFanfik());
+
+                foreach ($originalSection as $section) {
+                    if (false === $article->getSectionId()->contains($section)) {
+                        $section->getArticle()->removeSectionId($section);
+                        $section->setArticle(null);
+                        $em->persist($section);
+                        $em->remove($section);
+                    }
+                }
+
+                $newSection = new ArrayCollection();
+
+                foreach ($article->getSectionId() as $section) {
+                    $newSection->add($section);
+                }
+
+                foreach ($newSection as $section) {
+                    $section->setArticle($article);
+                }
+
+                $em = $this->getDoctrine()->getManager();
+                $em->flush();
+                $this->addFlash('success', 'Article is change!');
             }
 
-            foreach ($newSection as $section) {
-                $section->setArticle($article);
-            }
-
-            $em = $this->getDoctrine()->getManager();
-            $em->flush();
-            $this->addFlash('success', 'Article is change!');
-        }
         return $this->render(
             'articles/create.html.twig',
             array('form' => $form->createView())
         );
+        } else {
+            $this->addFlash('error', "You don't have access");
+            $strPage = (string) $page;
+            return $this->redirectToRoute('index');
+        }
     }
 }

@@ -18,9 +18,11 @@
 /phpunit.xml
 .phpunit.result.cache
 ###< phpunit/phpunit ###
-/.env
-/.htaccess
+.env
+.htaccess
 /.Procfile
 /symfony.exe
 /symfony.lock
 /.symfony
+/.env
+/.htaccess
