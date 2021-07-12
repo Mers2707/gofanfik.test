@@ -42,7 +42,7 @@ class ArticlesController extends AbstractController
     }
 
     /**
-     * @Route("/articles/{page}", name="articles_readmore", requirements={"page"="\d+"})
+     * @Route("/{page}", name="articles_readmore", requirements={"page"="\d+"})
      */
     public function readmore(int $page, Request $request, ArticlesRepository $articleRepository): Response
     {
@@ -117,7 +117,6 @@ class ArticlesController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 $article->setName($article->getName());
                 $nowUser = $this->container->get('security.token_storage')->getToken()->getUser();
-                $article->setUserId($nowUser->getId());
                 $article->setDescription($article->getDescription());
                 $article->setFanfik($article->getFanfik());
 
